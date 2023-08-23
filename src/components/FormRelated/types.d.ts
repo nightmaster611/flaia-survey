@@ -1,6 +1,8 @@
 import { GeneralFunction } from "@/types/common"
 import { ColProps, InputNumberProps } from "antd"
 import { Rule } from "antd/es/form"
+import { ControllerRenderProps } from "react-hook-form"
+import { ZodObject } from "zod"
 
 export type InputTypeWithoutOptions = 'text' | 'email' | 'password' | 'number' | 'date'
 export type InputTypeWithOptions = 'radio' | 'select' | 'checkbox'
@@ -12,25 +14,34 @@ export type MultipleOptionsInput = {
 }
 
 
-type CompleteFormInputPropsCommon = {
+type CustomFormInputPropsCommon = {
   placeholder?: string,
   rules?: Rule[],
   name: string,
   label?: string,
-  required?: boolean | string,
-  requiredErrorMessage?: string,
   inputNumberProps?: InputNumberProps,
   dependencies?: string[],
 }
 
-export type CompleteFormInputProps = ({
+export type CustomFormInputProps = ({
   type?: InputType,
   options?: MultipleOptionsInput[],
-}) & CompleteFormInputPropsCommon
+}) & CustomFormInputPropsCommon
 
-export type CompleteFormProps = {
-  inputs: CompleteFormInputProps[],
+export type CustomInputProps = {
+  type: InputType;
+  placeholder?: string;
+  options?: MultipleOptionsInput[];
+  label: string;
+  name: string;
+  inputNumberProps?: InputNumberProps;
+  className?: string;
+} & ControllerRenderProps<Record<string, any>, string>
+
+export type CustomFormProps = {
+  inputs: CustomFormInputProps[],
   initialValues: Record<string, any>,
-  onSubmit?: (arg: Record<keyof CompleteFormProps['initialValues'], any>) => void,
-  name: string
+  onSubmit?: (arg: Record<keyof CustomFormProps['initialValues'], any>) => void,
+  name: string,
+  validations?: ZodObject
 }
