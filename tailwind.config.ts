@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        'primary': '#1677ff'
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -19,6 +22,5 @@ const config: Config = {
   plugins: [plugin(function ({ addVariant }) {
     addVariant('not-last', '&:not(:last-child)')
   })],
-
 }
 export default config

@@ -205,23 +205,6 @@ const inputs: CustomFormInputProps[] = [
     name: 'challengeOptionOtherSpecify',
     label: 'If other, please specify',
     dependencies: ['challengeOption'],
-    rules: [
-      ({ getFieldValue }) => ({
-        validator(_, value) {
-          if (
-            !value &&
-            getFieldValue('challengeOption').includes('Other')
-          ) {
-            return Promise.reject(
-              new Error(
-                'This field is required if "Other" is selected'
-              )
-            );
-          }
-          return Promise.resolve();
-        }
-      })
-    ]
   },
   {
     name: 'rpaExploration',
@@ -229,29 +212,15 @@ const inputs: CustomFormInputProps[] = [
       'Has your asset management company explored Robotic Process Automation (RPA) or similar technologies to streamline repetitive tasks? (Select one)',
     type: 'radio',
     options: [
-      { label: 'Yes', value: 'Yes', colProps: { span: 12 } },
-      { label: 'No', value: 'No', colProps: { span: 12 } },
-      { label: 'Unsure', value: 'Unsure', colProps: { span: 12 } }
+      { label: 'Yes', value: 'Yes', colProps: { span: 8 } },
+      { label: 'No', value: 'No', colProps: { span: 8 } },
+      { label: 'Unsure', value: 'Unsure', colProps: { span: 8 } }
     ]
   },
   {
     name: 'rpaBenefits',
     label: 'If yes, what benefits were observed?',
     dependencies: ['rpaExploration'],
-    rules: [
-      ({ getFieldValue }) => ({
-        validator(_, value) {
-          if (!value && getFieldValue('rpaExploration') === 'Yes') {
-            return Promise.reject(
-              new Error(
-                'This field is required if "Yes" is selected'
-              )
-            );
-          }
-          return Promise.resolve();
-        }
-      })
-    ]
   },
   {
     name: 'aiIntegration',
@@ -334,7 +303,7 @@ const inputs: CustomFormInputProps[] = [
   {
     name: 'openForDiscussion',
     label: 'Are you open for discussion?',
-    type: 'select',
+    type: 'radio',
     options: [
       { value: 'Yes', label: 'Yes', colProps: { span: 12 } },
       { value: 'No', label: 'No', colProps: { span: 12 } }
@@ -352,12 +321,12 @@ const Survey = () => {
   };
 
   return (
-    <div className="p-12 h-full w-full overflow-auto flex justify-center">
-      <div className="md:max-w-[900px] max-w-full">
+    <div className="h-full w-full overflow-auto flex justify-center">
+      <div className="md:max-w-[900px] p-12 max-w-full h-[max-content]">
         <div className="mb-10">
           <SurveyTitle />
         </div>
-        <div className="p-4 rounded-md border border-black">
+        <div className="p-6 rounded-md border border-black">
           <CustomForm
             initialValues={initialSurveyValues}
             inputs={inputs}

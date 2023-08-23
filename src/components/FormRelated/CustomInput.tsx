@@ -3,14 +3,13 @@ import {
   CustomInputProps,
   InputType,
   MultipleOptionsInput
-} from './types';
+} from './form';
 import {
   Checkbox,
   Col,
   Form,
   Input,
   InputNumber,
-  InputNumberProps,
   Radio,
   Row,
   Select
