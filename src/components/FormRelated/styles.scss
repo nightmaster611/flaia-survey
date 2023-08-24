@@ -1,5 +1,8 @@
 .custom-input-antd {
-  .ant-select-selection-item, .ant-checkbox-wrapper,  .ant-radio-wrapper   {
-    @apply text-base
+  .ant-select-selection-item,
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper,
+  .ant-input-number {
+    @apply text-base;
   }
 }

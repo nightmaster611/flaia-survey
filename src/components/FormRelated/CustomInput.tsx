@@ -56,7 +56,7 @@ const CustomInput = React.forwardRef<HTMLElement, CustomInputProps>(
             onChange={onChangeBase}
             onBlur={onBlur}
             placeholder={placeholder}
-            className={className}
+            className={`${className || ''} w-full`}
           />
         );
       case 'password':
@@ -67,7 +67,7 @@ const CustomInput = React.forwardRef<HTMLElement, CustomInputProps>(
             onChange={onChangeBase}
             onBlur={onBlur}
             placeholder={placeholder}
-            className={className}
+            className={`${className || ''} w-full`}
           />
         );
       case 'number':
@@ -80,7 +80,7 @@ const CustomInput = React.forwardRef<HTMLElement, CustomInputProps>(
             placeholder={placeholder}
             controls={false}
             {...inputNumberProps}
-            className={className}
+            className={`${className || ''} w-full`}
           />
         );
       case 'radio':

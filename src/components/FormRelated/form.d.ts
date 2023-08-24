@@ -2,7 +2,7 @@ import { GeneralFunction } from "@/types/common"
 import { ColProps, InputNumberProps } from "antd"
 import { Rule } from "antd/es/form"
 import { ControllerRenderProps } from "react-hook-form"
-import { ZodObject } from "zod"
+import { ZodAny, ZodObject } from "zod"
 
 export type InputTypeWithoutOptions = 'text' | 'email' | 'password' | 'number' | 'date'
 export type InputTypeWithOptions = 'radio' | 'select' | 'checkbox'
@@ -19,13 +19,14 @@ type CustomFormInputPropsCommon = {
   rules?: Rule[],
   name: string,
   label?: string,
-  inputNumberProps?: InputNumberProps,
   dependencies?: string[],
+  type?: InputType,
+  colProps?: ColProps
 }
 
 export type CustomFormInputProps = ({
-  type?: InputType,
   options?: MultipleOptionsInput[],
+  inputNumberProps?: InputNumberProps,
 }) & CustomFormInputPropsCommon
 
 export type CustomInputProps = {
@@ -39,9 +40,9 @@ export type CustomInputProps = {
 } & ControllerRenderProps<Record<string, any>, string>
 
 export type CustomFormProps = {
-  inputs: CustomFormInputProps[],
+  inputs: (CustomFormInputProps | CustomFormInputProps[])[],
   initialValues: Record<string, any>,
   onSubmit?: (arg: Record<keyof CustomFormProps['initialValues'], any>) => void,
   name: string,
-  validations?: ZodObject
+  validations?: Record<keyof CustomFormProps['initialValues'], Zod>
 }
