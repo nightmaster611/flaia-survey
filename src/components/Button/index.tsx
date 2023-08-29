@@ -10,7 +10,7 @@ const Button: ReactPropsWithChildren<ButtonProps> = ({
   ...props
 }) => {
   return (
-    <div className="inline-block bg-primary text-white overflow-hidden rounded-md text-sm opacity-100 hover:opacity-90 transition-opacity">
+    <div className="inline-block bg-primary text-white overflow-hidden rounded-md text-base opacity-100 hover:opacity-90 transition-opacity">
       <button
         {...props}
         style={{

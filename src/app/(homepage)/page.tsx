@@ -4,6 +4,6 @@ export const metadata = {
   title: 'AI Survey'
 };
 
-export default function SurveyPage() {
+export default function HomePage() {
   return <Survey />;
 }

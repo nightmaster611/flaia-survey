@@ -14,20 +14,20 @@ export type MultipleOptionsInput = {
 }
 
 
-type CustomFormInputPropsCommon = {
+type CustomFormInputPropsCommon<K extends string> = {
   placeholder?: string,
   rules?: Rule[],
-  name: string,
+  name: K,
   label?: string,
   dependencies?: string[],
   type?: InputType,
   colProps?: ColProps
 }
 
-export type CustomFormInputProps = ({
+export type CustomFormInputProps<K extends string = any> = ({
   options?: MultipleOptionsInput[],
   inputNumberProps?: InputNumberProps,
-}) & CustomFormInputPropsCommon
+}) & CustomFormInputPropsCommon<K>
 
 export type CustomInputProps = {
   type: InputType;
@@ -39,10 +39,10 @@ export type CustomInputProps = {
   className?: string;
 } & ControllerRenderProps<Record<string, any>, string>
 
-export type CustomFormProps = {
-  inputs: (CustomFormInputProps | CustomFormInputProps[])[],
-  initialValues: Record<string, any>,
-  onSubmit?: (arg: Record<keyof CustomFormProps['initialValues'], any>) => void,
+export type CustomFormProps<T extends Record<string, any> = Record<string, any>> = {
+  inputs: (CustomFormInputProps<keyof T> | CustomFormInputProps<keyof T>[])[],
+  initialValues: T,
+  onSubmit?: (arg: { [key in keyof T]: any }) => void,
   name: string,
-  validations?: Record<keyof CustomFormProps['initialValues'], Zod>
+  validations?: Partial<{ [key in keyof T]: Zod }>
 }

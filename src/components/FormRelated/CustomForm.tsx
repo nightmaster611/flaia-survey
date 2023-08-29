@@ -20,6 +20,8 @@ const isInputOptionArray = (
   inputProps: CustomFormInputProps | CustomFormInputProps[]
 ): inputProps is CustomFormInputProps[] => isArray(inputProps);
 
+const labelClassnames = 'text-base font-[500] mb-1';
+
 const SameRowInputs: React.FC<{
   inputs: CustomFormInputProps[];
   form: Partial<UseFormReturn>;
@@ -33,7 +35,9 @@ const SameRowInputs: React.FC<{
           className="custom-input-antd not-last:pr-2 not-first:pl-2"
           key={inputProps.name}
         >
-          <div className="mb-1">{inputProps.label}</div>
+          <div className={`${labelClassnames}`}>
+            {inputProps.label}
+          </div>
           <Controller
             name={inputProps.name}
             control={control}
@@ -60,17 +64,19 @@ const SameRowInputs: React.FC<{
   );
 });
 
-const CustomForm: React.FC<CustomFormProps> = ({
-  inputs,
+function CustomForm<
+  T extends Record<string, any> = Record<string, any>
+>({
+  inputs = [],
   initialValues,
   onSubmit,
   validations
-}) => {
+}: CustomFormProps<T>): JSX.Element {
   const { register, handleSubmit, watch, control, formState } =
-    useForm<Record<keyof typeof initialValues, any>>({
+    useForm<Record<string, any>>({
       defaultValues: initialValues,
       resolver: validations
-        ? zodResolver(z.object(validations))
+        ? zodResolver(z.object(validations as Record<string, any>))
         : undefined,
       mode: 'all'
     });
@@ -81,8 +87,12 @@ const CustomForm: React.FC<CustomFormProps> = ({
     onSubmit?.(data);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmitBase)}>
-      <div className="mb-4">
+    <form
+      onSubmit={handleSubmit(
+        onSubmitBase as SubmitHandler<Record<string, any>>
+      )}
+    >
+      <div className="mb-5">
         {inputs.map(inputProps => (
           // If inputProps is an array => this usually means multiple inputs on a same row
           <React.Fragment
@@ -92,7 +102,7 @@ const CustomForm: React.FC<CustomFormProps> = ({
             }
           >
             {isInputOptionArray(inputProps) ? (
-              <div className="not-last:mb-4">
+              <div className="not-last:mb-5">
                 <SameRowInputs
                   form={{ control, formState }}
                   inputs={inputProps}
@@ -100,10 +110,12 @@ const CustomForm: React.FC<CustomFormProps> = ({
               </div>
             ) : (
               // If inputProps is not array => this usually means one input per row
-              <div className="not-last:mb-4 custom-input-antd">
-                <div className="mb-1">{inputProps.label}</div>
+              <div className="not-last:mb-5 custom-input-antd">
+                <div className={`${labelClassnames}`}>
+                  {inputProps.label}
+                </div>
                 <Controller
-                  name={inputProps.name}
+                  name={inputProps.name as string}
                   control={control}
                   render={({ field }) => (
                     <CustomInput
@@ -117,7 +129,7 @@ const CustomForm: React.FC<CustomFormProps> = ({
                 />
                 <ErrorMessage
                   errors={errors}
-                  name={inputProps.name}
+                  name={inputProps.name as string}
                   render={({ message }) => (
                     <p className="text-red-600">{message}</p>
                   )}
@@ -132,6 +144,6 @@ const CustomForm: React.FC<CustomFormProps> = ({
       </div>
     </form>
   );
-};
+}
 
-export default React.memo(CustomForm);
+export default React.memo(CustomForm) as typeof CustomForm;

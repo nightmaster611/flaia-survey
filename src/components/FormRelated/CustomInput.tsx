@@ -18,7 +18,7 @@ import {
 function isOnChangeArgumentEventObject(
   e: any
 ): e is React.ChangeEvent {
-  return e.preventDefault && e.stopPropagation;
+  return e?.preventDefault && e?.stopPropagation;
 }
 const CustomInput = React.forwardRef<HTMLElement, CustomInputProps>(
   (

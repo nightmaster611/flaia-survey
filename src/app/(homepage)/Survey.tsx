@@ -1,11 +1,15 @@
 'use client';
+import Button from '@/components/Button';
 import CustomForm from '@/components/FormRelated/CustomForm';
 import {
   CustomFormInputProps,
   CustomFormProps
 } from '@/components/FormRelated/form';
+import { BackendApis } from '@/services';
+import { GeneralFunction } from '@/types/common';
 import { Modal } from 'antd';
-import React from 'react';
+import { isArray } from 'lodash';
+import React, { useState } from 'react';
 import { z } from 'zod';
 
 const SurveyTitle = () => {
@@ -42,21 +46,56 @@ const SurveyTitle = () => {
   );
 };
 
-const SurveyPrivacyModal: React.FC<{ visible: boolean }> = ({
-  visible
-}) => {
+const SurveyPrivacyModal: React.FC<{
+  visible: boolean;
+  onClose: GeneralFunction;
+}> = ({ visible, onClose }) => {
   return (
-    <Modal open={visible}>
-      <h2>Privacy Statement</h2>
+    <Modal
+      open={visible}
+      onCancel={onClose}
+      title="Privacy Statement"
+      footer={null}
+    >
       <p>
         Your privacy is important to us. We handle your personal
         information responsibly and in accordance with our privacy
         policy.
       </p>
+      <div className="flex items-center mt-4">
+        <Button onClick={onClose}>Accept</Button>
+      </div>
     </Modal>
   );
 };
-const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
+
+type InputName =
+  | 'firstName'
+  | 'lastName'
+  | 'jobTitle'
+  | 'cellPhone'
+  | 'company'
+  | 'email'
+  | 'role'
+  | 'primaryNeeds'
+  | 'aiBelief'
+  | 'aiUse'
+  | 'challengeOption'
+  | 'challengeOptionOtherSpecify'
+  | 'rpaExplorationOption'
+  | 'rpaBenefits'
+  | 'aiInvestmentLikelihood'
+  | 'aiEnhancement'
+  | 'aiCostBelief'
+  | 'aiPilot'
+  | 'openForDiscussion'
+  | 'aiTaskPercentage'
+  | 'aiIntegration';
+
+const inputs: (
+  | CustomFormInputProps<InputName>
+  | CustomFormInputProps<InputName>[]
+)[] = [
   [
     {
       name: 'firstName',
@@ -97,7 +136,6 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
   {
     name: 'role',
     label: 'Functional Role',
-
     type: 'select',
     options: [
       { label: 'Investments', value: 'Investments' },
@@ -110,7 +148,7 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
     ]
   },
   {
-    name: 'primaryNeedForAi',
+    name: 'primaryNeeds',
     label:
       'What is your primary need for using artificial intelligence to operational excellence? (You can select more than one)',
     type: 'checkbox',
@@ -242,7 +280,7 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
     dependencies: ['challengeOption']
   },
   {
-    name: 'rpaExploration',
+    name: 'rpaExplorationOption',
     label:
       'Has your asset management company explored Robotic Process Automation (RPA) or similar technologies to streamline repetitive tasks? (Select one)',
     type: 'radio',
@@ -255,7 +293,7 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
   {
     name: 'rpaBenefits',
     label: 'If yes, what benefits were observed?',
-    dependencies: ['rpaExploration']
+    dependencies: ['rpaExplorationOption']
   },
   {
     name: 'aiIntegration',
@@ -264,7 +302,6 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
   },
   {
     name: 'aiInvestmentLikelihood',
-
     type: 'radio',
     label:
       'How likely is your asset management company to invest in AI technology for operational improvements?',
@@ -345,35 +382,82 @@ const inputs: (CustomFormInputProps | CustomFormInputProps[])[] = [
     ]
   }
 ];
-const initialSurveyValues = inputs.reduce(
-  (acc, input) => ({ ...acc, [input.name]: undefined }),
-  {} as Record<string, any>
-);
+const initialSurveyValues: { [key in InputName]: any } =
+  inputs.reduce((acc, input) => {
+    if (!isArray(input)) {
+      return { ...acc, [input.name]: undefined };
+    }
+    const defaultValueByInputName = input.reduce(
+      (acc2, input2) => ({
+        ...acc2,
+        [input2.name]: undefined
+      }),
+      {} as { [key in InputName]: any }
+    );
+    return { ...acc, ...defaultValueByInputName };
+  }, {} as { [key in InputName]: any });
 
 const Survey = () => {
-  const onSubmit = async (v: any) => {
-    console.log('value', v);
+  const [visible, setVisible] = useState(true);
+  const closeModal = () => {
+    setVisible(false);
+  };
+  const onSubmit = async (v: { [key in InputName]: any }) => {
+    await BackendApis.createSurvey(v);
+    alert('Form submission is successful!');
   };
 
   return (
-    <div className="h-full w-full overflow-auto flex justify-center">
-      <div className="md:max-w-[900px] p-12 max-w-full h-[max-content]">
-        <div className="mb-10">
-          <SurveyTitle />
-        </div>
-        <div className="p-6 rounded-md border border-black">
-          <CustomForm
-            initialValues={initialSurveyValues}
-            validations={{
-              firstName: z.string().min(1, 'Required')
-            }}
-            inputs={inputs}
-            name="survey"
-            onSubmit={onSubmit}
-          />
+    <>
+      <SurveyPrivacyModal visible={visible} onClose={closeModal} />
+      <div className="h-full w-full overflow-auto flex justify-center">
+        <div className="md:max-w-[900px] p-12 max-w-full h-[max-content]">
+          <div className="mb-10">
+            <SurveyTitle />
+          </div>
+          <div className="p-6 rounded-md border border-black">
+            <CustomForm
+              initialValues={initialSurveyValues}
+              // validations={{
+              //   firstName: z.string().min(1, 'Required'),
+              //   lastName: z.string().min(1, 'Required'),
+              //   jobTitle: z.string().min(1, 'Required'),
+              //   company: z.string().min(1, 'Required'),
+              //   email: z
+              //     .string()
+              //     .email('Invalid email')
+              //     .min(1, 'Required'),
+              //   aiBelief: z.string().min(1, 'Required'),
+              //   aiCostBelief: z.string().min(1, 'Required'),
+              //   aiEnhancement: z.string().min(1, 'Required'),
+              //   aiIntegration: z.string().min(1, 'Required'),
+              //   aiInvestmentLikelihood: z.string().min(1, 'Required'),
+              //   aiPilot: z.string().min(1, 'Required'),
+              //   aiTaskPercentage: z.number({
+              //     required_error: 'Required'
+              //   }),
+              //   aiUse: z.string().min(1, 'Required'),
+              //   cellPhone: z.string().min(1, 'Required'),
+              //   challengeOption: z
+              //     .array(z.string())
+              //     .min(1, 'Required'),
+              //   challengeOptionOtherSpecify: z.string().optional(),
+              //   openForDiscussion: z.string().min(1, 'Required'),
+              //   primaryNeeds: z
+              //     .array(z.string())
+              //     .min(1, 'Required'),
+              //   role: z.string().min(1, 'Required'),
+              //   rpaBenefits: z.string().optional(),
+              //   rpaExplorationOption: z.string().min(1, 'Required')
+              // }}
+              inputs={inputs}
+              name="survey"
+              onSubmit={onSubmit}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
